@@ -80,31 +80,31 @@ function MessageBubble({
   const isLeft = message.agent === "A";
 
   return (
-    <div className={`flex gap-3 ${isLeft ? "" : "flex-row-reverse"}`}>
-      {/* Avatar */}
-      <div className="flex-shrink-0">
+    <div className={`flex gap-2 sm:gap-3 ${isLeft ? "" : "flex-row-reverse"}`}>
+      {/* Avatar - hidden on mobile */}
+      <div className="flex-shrink-0 hidden sm:block">
         <div className="w-10 h-10 bg-[#262626] rounded-full flex items-center justify-center text-lg">
           🤖
         </div>
       </div>
 
       {/* Message */}
-      <div className={`flex-1 max-w-[80%] ${isLeft ? "" : "text-right"}`}>
-        <div className="flex items-center gap-2 mb-1">
+      <div className={`flex-1 ${isLeft ? "" : "text-right"}`}>
+        <div className={`flex items-center gap-2 mb-1 ${isLeft ? "" : "justify-end"}`}>
           <Link 
             href={`/agents/${agent.slug}`}
-            className="font-semibold text-sm hover:text-orange-500 transition-colors"
+            className="font-semibold text-xs sm:text-sm hover:text-orange-500 transition-colors"
           >
             {agent.name}
           </Link>
-          <span className="text-xs text-gray-500">Round {message.round}</span>
+          <span className="text-xs text-gray-500">R{message.round}</span>
         </div>
-        <div className={`p-4 rounded-lg ${
+        <div className={`p-3 sm:p-4 rounded-lg ${
           isLeft 
             ? "bg-[#1a1a1a] border border-[#262626]" 
             : "bg-orange-500/10 border border-orange-500/20"
         }`}>
-          <p className="text-gray-200 leading-relaxed">{message.content}</p>
+          <p className="text-gray-200 leading-relaxed text-sm sm:text-base">{message.content}</p>
         </div>
       </div>
     </div>
@@ -129,59 +129,59 @@ export default function BattleDetailPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-0">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <Link 
           href="/battles"
-          className="text-gray-400 hover:text-white text-sm mb-4 inline-block"
+          className="text-gray-400 hover:text-white text-sm mb-3 inline-block"
         >
-          ← Back to Battles
+          ← Back
         </Link>
         
-        <div className="flex items-center gap-3 mb-2">
-          <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+        <div className="flex items-center gap-2 mb-2">
+          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
             battle.status === "in_progress" ? "bg-green-500" :
             battle.status === "voting" ? "bg-yellow-500" :
             "bg-gray-500"
           } text-black`}>
             {statusText[battle.status as keyof typeof statusText]}
           </span>
-          <span className="text-gray-500 text-sm">👁 {battle.spectators} watching</span>
+          <span className="text-gray-500 text-xs sm:text-sm">👁 {battle.spectators}</span>
         </div>
 
-        <h1 className="text-2xl font-bold mb-4">{battle.topic}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">{battle.topic}</h1>
 
         {/* VS Header */}
-        <div className="flex items-center justify-center gap-8 p-4 bg-[#141414] border border-[#262626] rounded-lg">
+        <div className="flex items-center justify-between sm:justify-center gap-2 sm:gap-8 p-3 sm:p-4 bg-[#141414] border border-[#262626] rounded-lg">
           <Link 
             href={`/agents/${battle.agentA.slug}`}
-            className="text-center hover:opacity-80 transition-opacity"
+            className="text-center hover:opacity-80 transition-opacity flex-1 sm:flex-none"
           >
-            <div className="w-16 h-16 bg-[#262626] rounded-full mx-auto mb-2 flex items-center justify-center text-2xl">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#262626] rounded-full mx-auto mb-1 sm:mb-2 flex items-center justify-center text-xl sm:text-2xl">
               🤖
             </div>
-            <div className="font-semibold">{battle.agentA.name}</div>
-            <div className="text-orange-500 text-sm">{battle.agentA.elo} ELO</div>
+            <div className="font-semibold text-sm sm:text-base truncate">{battle.agentA.name}</div>
+            <div className="text-orange-500 text-xs sm:text-sm">{battle.agentA.elo}</div>
           </Link>
 
-          <div className="text-3xl font-bold text-gray-600">VS</div>
+          <div className="text-xl sm:text-3xl font-bold text-gray-600 px-2">VS</div>
 
           <Link 
             href={`/agents/${battle.agentB.slug}`}
-            className="text-center hover:opacity-80 transition-opacity"
+            className="text-center hover:opacity-80 transition-opacity flex-1 sm:flex-none"
           >
-            <div className="w-16 h-16 bg-[#262626] rounded-full mx-auto mb-2 flex items-center justify-center text-2xl">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#262626] rounded-full mx-auto mb-1 sm:mb-2 flex items-center justify-center text-xl sm:text-2xl">
               🤖
             </div>
-            <div className="font-semibold">{battle.agentB.name}</div>
-            <div className="text-orange-500 text-sm">{battle.agentB.elo} ELO</div>
+            <div className="font-semibold text-sm sm:text-base truncate">{battle.agentB.name}</div>
+            <div className="text-orange-500 text-xs sm:text-sm">{battle.agentB.elo}</div>
           </Link>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="bg-[#0d0d0d] border border-[#262626] rounded-lg p-6 mb-6">
+      <div className="bg-[#0d0d0d] border border-[#262626] rounded-lg p-3 sm:p-6 mb-4 sm:mb-6">
         <div className="space-y-6">
           {battle.messages.map((message) => (
             <MessageBubble
@@ -211,19 +211,19 @@ export default function BattleDetailPage() {
 
       {/* Voting Section (when applicable) */}
       {battle.status === "voting" && (
-        <div className="bg-[#141414] border border-[#262626] rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4 text-center">Cast Your Vote</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <button className="p-6 bg-[#1a1a1a] border border-[#262626] rounded-lg hover:border-orange-500 transition-colors">
+        <div className="bg-[#141414] border border-[#262626] rounded-lg p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center">Cast Your Vote</h2>
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
+            <button className="p-4 sm:p-6 bg-[#1a1a1a] border border-[#262626] rounded-lg hover:border-orange-500 transition-colors">
               <div className="text-center">
-                <div className="text-2xl mb-2">🤖</div>
-                <div className="font-semibold">{battle.agentA.name}</div>
+                <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🤖</div>
+                <div className="font-semibold text-sm sm:text-base truncate">{battle.agentA.name}</div>
               </div>
             </button>
-            <button className="p-6 bg-[#1a1a1a] border border-[#262626] rounded-lg hover:border-orange-500 transition-colors">
+            <button className="p-4 sm:p-6 bg-[#1a1a1a] border border-[#262626] rounded-lg hover:border-orange-500 transition-colors">
               <div className="text-center">
-                <div className="text-2xl mb-2">🤖</div>
-                <div className="font-semibold">{battle.agentB.name}</div>
+                <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🤖</div>
+                <div className="font-semibold text-sm sm:text-base truncate">{battle.agentB.name}</div>
               </div>
             </button>
           </div>
@@ -231,12 +231,12 @@ export default function BattleDetailPage() {
       )}
 
       {/* Share / Actions */}
-      <div className="flex justify-center gap-4 mt-6">
-        <button className="px-4 py-2 bg-[#141414] border border-[#262626] rounded-lg text-sm hover:border-orange-500/50 transition-colors">
-          🔗 Share Battle
+      <div className="flex justify-center gap-2 sm:gap-4 mt-4 sm:mt-6">
+        <button className="px-3 py-2 sm:px-4 bg-[#141414] border border-[#262626] rounded-lg text-xs sm:text-sm hover:border-orange-500/50 transition-colors">
+          🔗 Share
         </button>
-        <button className="px-4 py-2 bg-[#141414] border border-[#262626] rounded-lg text-sm hover:border-orange-500/50 transition-colors">
-          🔔 Get Notified
+        <button className="px-3 py-2 sm:px-4 bg-[#141414] border border-[#262626] rounded-lg text-xs sm:text-sm hover:border-orange-500/50 transition-colors">
+          🔔 Notify
         </button>
       </div>
     </div>

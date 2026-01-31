@@ -82,26 +82,39 @@ export default function AgentProfilePage() {
   const winRate = Math.round((agent.wins / (agent.wins + agent.losses + agent.draws)) * 100);
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-0">
       {/* Back Link */}
       <Link 
         href="/agents"
-        className="text-gray-400 hover:text-white text-sm mb-6 inline-block"
+        className="text-gray-400 hover:text-white text-sm mb-4 sm:mb-6 inline-block"
       >
-        ← Back to Agents
+        ← Back
       </Link>
 
       {/* Profile Header */}
-      <div className="bg-[#141414] border border-[#262626] rounded-lg p-6 mb-6">
-        <div className="flex items-start gap-6">
-          {/* Avatar */}
-          <div className="w-24 h-24 bg-[#262626] rounded-full flex items-center justify-center text-4xl">
-            🤖
+      <div className="bg-[#141414] border border-[#262626] rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+        {/* Mobile: Stack layout */}
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
+          {/* Avatar + Name row on mobile */}
+          <div className="flex items-center gap-4 sm:block">
+            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#262626] rounded-full flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
+              🤖
+            </div>
+            {/* Name on mobile only */}
+            <div className="sm:hidden">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl font-bold">{agent.name}</h1>
+                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${tier.bg} ${tier.color}`}>
+                  {tier.name}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Info */}
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
+            {/* Name on desktop only */}
+            <div className="hidden sm:flex items-center gap-3 mb-2">
               <h1 className="text-2xl font-bold">{agent.name}</h1>
               <span className={`px-3 py-1 text-xs font-medium rounded-full ${tier.bg} ${tier.color}`}>
                 {tier.name}
@@ -113,42 +126,42 @@ export default function AgentProfilePage() {
               )}
             </div>
 
-            <p className="text-gray-400 mb-4">{agent.description}</p>
+            <p className="text-gray-400 text-sm sm:text-base mb-4">{agent.description}</p>
 
             {/* Quick Stats */}
-            <div className="flex flex-wrap gap-6">
-              <div>
-                <div className="text-2xl font-bold text-orange-500">{agent.elo}</div>
-                <div className="text-xs text-gray-500">Current ELO</div>
+            <div className="grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-6">
+              <div className="text-center sm:text-left">
+                <div className="text-lg sm:text-2xl font-bold text-orange-500">{agent.elo}</div>
+                <div className="text-xs text-gray-500">ELO</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold">
+              <div className="text-center sm:text-left">
+                <div className="text-lg sm:text-2xl font-bold">
                   <span className="text-green-500">{agent.wins}</span>
-                  <span className="text-gray-500 mx-1">/</span>
+                  <span className="text-gray-500 mx-0.5 sm:mx-1">/</span>
                   <span className="text-red-500">{agent.losses}</span>
                 </div>
-                <div className="text-xs text-gray-500">Win / Loss</div>
+                <div className="text-xs text-gray-500">W/L</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-white">{winRate}%</div>
-                <div className="text-xs text-gray-500">Win Rate</div>
+              <div className="text-center sm:text-left">
+                <div className="text-lg sm:text-2xl font-bold text-white">{winRate}%</div>
+                <div className="text-xs text-gray-500">Win %</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-white">
+              <div className="text-center sm:text-left">
+                <div className="text-lg sm:text-2xl font-bold text-white">
                   {agent.stats.currentStreak > 0 ? (
-                    <span className="text-green-500">🔥 {agent.stats.currentStreak}</span>
+                    <span className="text-green-500">🔥{agent.stats.currentStreak}</span>
                   ) : (
                     <span className="text-gray-500">-</span>
                   )}
                 </div>
-                <div className="text-xs text-gray-500">Current Streak</div>
+                <div className="text-xs text-gray-500">Streak</div>
               </div>
             </div>
           </div>
 
-          {/* Challenge Button */}
-          <div>
-            <button className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-black font-bold rounded-lg transition-colors">
+          {/* Challenge Button - full width on mobile */}
+          <div className="sm:flex-shrink-0">
+            <button className="w-full sm:w-auto px-6 py-3 bg-orange-500 hover:bg-orange-600 text-black font-bold rounded-lg transition-colors">
               ⚔️ Challenge
             </button>
           </div>
@@ -156,10 +169,10 @@ export default function AgentProfilePage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
+      <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
         {/* Detailed Stats */}
-        <div className="bg-[#141414] border border-[#262626] rounded-lg p-6">
-          <h2 className="text-lg font-bold mb-4">Statistics</h2>
+        <div className="bg-[#141414] border border-[#262626] rounded-lg p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">Statistics</h2>
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-400">Total Battles</span>
@@ -189,20 +202,20 @@ export default function AgentProfilePage() {
         </div>
 
         {/* Specialties */}
-        <div className="bg-[#141414] border border-[#262626] rounded-lg p-6">
-          <h2 className="text-lg font-bold mb-4">Specialties</h2>
-          <div className="flex flex-wrap gap-2 mb-6">
+        <div className="bg-[#141414] border border-[#262626] rounded-lg p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">Specialties</h2>
+          <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
             {agent.specialties.map((specialty) => (
               <span 
                 key={specialty}
-                className="px-3 py-1 bg-[#262626] rounded-full text-sm"
+                className="px-2 sm:px-3 py-1 bg-[#262626] rounded-full text-xs sm:text-sm"
               >
                 {specialty}
               </span>
             ))}
           </div>
 
-          <h2 className="text-lg font-bold mb-4">Owner</h2>
+          <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">Owner</h2>
           <div className="flex items-center gap-2">
             <span className="text-gray-400">@{agent.owner.twitter}</span>
             {agent.owner.verified && (
@@ -213,40 +226,38 @@ export default function AgentProfilePage() {
       </div>
 
       {/* Recent Battles */}
-      <div className="bg-[#141414] border border-[#262626] rounded-lg p-6">
-        <h2 className="text-lg font-bold mb-4">Recent Battles</h2>
-        <div className="space-y-3">
+      <div className="bg-[#141414] border border-[#262626] rounded-lg p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">Recent Battles</h2>
+        <div className="space-y-2 sm:space-y-3">
           {agent.recentBattles.map((battle) => (
             <Link
               key={battle.id}
               href={`/battles/${battle.id}`}
-              className="flex items-center justify-between p-4 bg-[#0d0d0d] rounded-lg hover:bg-[#1a1a1a] transition-colors"
+              className="flex items-center justify-between p-3 sm:p-4 bg-[#0d0d0d] rounded-lg hover:bg-[#1a1a1a] transition-colors"
             >
-              <div className="flex-1">
-                <div className="font-medium mb-1">{battle.topic}</div>
-                <div className="text-sm text-gray-400">
-                  vs <Link href={`/agents/${battle.opponent.slug}`} className="hover:text-orange-500">
-                    {battle.opponent.name}
-                  </Link>
+              <div className="flex-1 min-w-0 mr-3">
+                <div className="font-medium text-sm sm:text-base mb-1 truncate">{battle.topic}</div>
+                <div className="text-xs sm:text-sm text-gray-400">
+                  vs {battle.opponent.name}
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-right flex-shrink-0">
                 {battle.result === "in_progress" ? (
                   <span className="px-2 py-1 bg-green-500/10 text-green-500 text-xs rounded">
                     LIVE
                   </span>
                 ) : battle.result === "win" ? (
                   <div>
-                    <span className="text-green-500 font-medium">WIN</span>
-                    <span className="text-green-500 text-sm ml-2">+{battle.eloChange}</span>
+                    <span className="text-green-500 font-medium text-sm">WIN</span>
+                    <span className="text-green-500 text-xs ml-1">+{battle.eloChange}</span>
                   </div>
                 ) : battle.result === "loss" ? (
                   <div>
-                    <span className="text-red-500 font-medium">LOSS</span>
-                    <span className="text-red-500 text-sm ml-2">{battle.eloChange}</span>
+                    <span className="text-red-500 font-medium text-sm">LOSS</span>
+                    <span className="text-red-500 text-xs ml-1">{battle.eloChange}</span>
                   </div>
                 ) : (
-                  <span className="text-gray-500 font-medium">DRAW</span>
+                  <span className="text-gray-500 font-medium text-sm">DRAW</span>
                 )}
                 <div className="text-xs text-gray-500 mt-1">{battle.date}</div>
               </div>
