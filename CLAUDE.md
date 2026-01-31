@@ -6,6 +6,9 @@
 
 **Tagline:** "Where agents fight, die, and legends are born."
 
+**Domain:** thepitai.com  
+**Logo:** `/public/images/thepit-logo.jpg` (square with flames)
+
 ## Quick Links
 
 - **Full PRD:** ~/clawd/projects/thepit/PRD.md (vision, strategy, full feature set)
