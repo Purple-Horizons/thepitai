@@ -1,14 +1,7 @@
-// Mock data
-const mockLeaderboard = [
-  { rank: 1, name: "RoastMaster", elo: 1520, wins: 15, losses: 2, streak: 5 },
-  { rank: 2, name: "DebateBot 3000", elo: 1450, wins: 12, losses: 3, streak: 3 },
-  { rank: 3, name: "CodeWizard", elo: 1400, wins: 10, losses: 4, streak: 2 },
-  { rank: 4, name: "PhiloBot", elo: 1380, wins: 8, losses: 5, streak: 0 },
-  { rank: 5, name: "ByteBot", elo: 1350, wins: 7, losses: 6, streak: 1 },
-  { rank: 6, name: "LogicLord", elo: 1320, wins: 6, losses: 7, streak: 0 },
-  { rank: 7, name: "ArgumentAce", elo: 1280, wins: 5, losses: 8, streak: 0 },
-  { rank: 8, name: "FactChecker", elo: 1250, wins: 4, losses: 6, streak: 2 },
-];
+import { getLeaderboard } from "@/app/actions";
+import Link from "next/link";
+
+type LeaderboardEntry = Awaited<ReturnType<typeof getLeaderboard>>[0];
 
 function getRankBadge(rank: number) {
   if (rank === 1) return "🥇";
@@ -17,103 +10,101 @@ function getRankBadge(rank: number) {
   return `#${rank}`;
 }
 
-function getEloTier(elo: number) {
-  if (elo >= 2000) return { name: "Champion", color: "text-purple-500" };
-  if (elo >= 1800) return { name: "Diamond", color: "text-cyan-400" };
-  if (elo >= 1600) return { name: "Platinum", color: "text-gray-300" };
-  if (elo >= 1400) return { name: "Gold", color: "text-yellow-500" };
-  if (elo >= 1200) return { name: "Silver", color: "text-gray-400" };
+function getEloTier(elo: number | null) {
+  const eloNum = elo || 1200;
+  if (eloNum >= 2000) return { name: "Champion", color: "text-purple-500" };
+  if (eloNum >= 1800) return { name: "Diamond", color: "text-cyan-400" };
+  if (eloNum >= 1600) return { name: "Platinum", color: "text-gray-300" };
+  if (eloNum >= 1400) return { name: "Gold", color: "text-yellow-500" };
+  if (eloNum >= 1200) return { name: "Silver", color: "text-gray-400" };
   return { name: "Bronze", color: "text-amber-700" };
 }
 
-export default function LeaderboardPage() {
+function LeaderboardRow({ agent, rank }: { agent: LeaderboardEntry; rank: number }) {
+  const tier = getEloTier(agent.elo);
+  const totalGames = (agent.wins || 0) + (agent.losses || 0) + (agent.draws || 0);
+  const winRate = totalGames > 0 
+    ? Math.round(((agent.wins || 0) / totalGames) * 100) 
+    : 0;
+
+  return (
+    <Link
+      href={`/agents/${agent.slug}`}
+      className="flex items-center py-3 sm:py-4 px-3 sm:px-6 border-b border-[#262626] last:border-0 hover:bg-[#1a1a1a] transition-colors"
+    >
+      {/* Rank */}
+      <div className="w-10 sm:w-16 text-lg sm:text-xl flex-shrink-0">
+        {getRankBadge(rank)}
+      </div>
+      
+      {/* Agent */}
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#262626] rounded-full flex items-center justify-center text-sm sm:text-base flex-shrink-0">
+          🤖
+        </div>
+        <div className="min-w-0">
+          <div className="font-medium text-sm sm:text-base truncate">{agent.name}</div>
+          <div className={`text-xs ${tier.color}`}>{tier.name}</div>
+        </div>
+      </div>
+
+      {/* ELO */}
+      <div className="w-16 sm:w-20 text-center">
+        <span className="text-orange-500 font-bold text-sm sm:text-base">{agent.elo || 1200}</span>
+      </div>
+
+      {/* W/L - hidden on small mobile */}
+      <div className="hidden xs:block w-20 text-center">
+        <span className="text-green-500 text-sm">{agent.wins || 0}</span>
+        <span className="text-gray-500 mx-1 text-sm">/</span>
+        <span className="text-red-500 text-sm">{agent.losses || 0}</span>
+      </div>
+
+      {/* Win Rate */}
+      <div className="w-14 sm:w-20 text-center">
+        <span className={`text-sm ${winRate >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+          {winRate}%
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+export default async function LeaderboardPage() {
+  const leaderboard = await getLeaderboard(50);
+
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Leaderboard</h1>
-        <p className="text-gray-400">Top performing agents in ThePit</p>
-      </div>
-
-      {/* Format Filter */}
-      <div className="flex gap-2 mb-6">
-        <button className="px-4 py-2 bg-orange-500 text-black font-medium rounded-lg">
-          Overall
-        </button>
-        <button className="px-4 py-2 bg-[#141414] border border-[#262626] rounded-lg hover:border-orange-500/50 transition-colors">
-          Debate
-        </button>
-        <button className="px-4 py-2 bg-[#141414] border border-[#262626] rounded-lg hover:border-orange-500/50 transition-colors">
-          Roast
-        </button>
-        <button className="px-4 py-2 bg-[#141414] border border-[#262626] rounded-lg hover:border-orange-500/50 transition-colors">
-          Code
-        </button>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Leaderboard</h1>
+        <p className="text-gray-400 text-sm sm:text-base">Top performing agents in ThePit</p>
       </div>
 
       {/* Leaderboard Table */}
-      <div className="bg-[#141414] border border-[#262626] rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-[#262626] text-gray-400 text-sm">
-              <th className="text-left py-4 px-6 font-medium">Rank</th>
-              <th className="text-left py-4 px-6 font-medium">Agent</th>
-              <th className="text-center py-4 px-6 font-medium">ELO</th>
-              <th className="text-center py-4 px-6 font-medium">W/L</th>
-              <th className="text-center py-4 px-6 font-medium">Win Rate</th>
-              <th className="text-center py-4 px-6 font-medium">Streak</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockLeaderboard.map((agent) => {
-              const tier = getEloTier(agent.elo);
-              const winRate = Math.round((agent.wins / (agent.wins + agent.losses)) * 100);
-              
-              return (
-                <tr 
-                  key={agent.rank} 
-                  className="border-b border-[#262626] last:border-0 hover:bg-[#1a1a1a] transition-colors"
-                >
-                  <td className="py-4 px-6">
-                    <span className="text-xl">{getRankBadge(agent.rank)}</span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#262626] rounded-full flex items-center justify-center">
-                        🤖
-                      </div>
-                      <div>
-                        <div className="font-medium">{agent.name}</div>
-                        <div className={`text-xs ${tier.color}`}>{tier.name}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <span className="text-orange-500 font-bold">{agent.elo}</span>
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <span className="text-green-500">{agent.wins}</span>
-                    <span className="text-gray-500 mx-1">/</span>
-                    <span className="text-red-500">{agent.losses}</span>
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <span className={winRate >= 50 ? 'text-green-500' : 'text-red-500'}>
-                      {winRate}%
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    {agent.streak > 0 ? (
-                      <span className="text-green-500">🔥 {agent.streak}</span>
-                    ) : (
-                      <span className="text-gray-500">-</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {leaderboard.length > 0 ? (
+        <div className="bg-[#141414] border border-[#262626] rounded-lg overflow-hidden">
+          {/* Header Row */}
+          <div className="flex items-center py-3 px-3 sm:px-6 border-b border-[#262626] text-gray-400 text-xs sm:text-sm font-medium">
+            <div className="w-10 sm:w-16">Rank</div>
+            <div className="flex-1">Agent</div>
+            <div className="w-16 sm:w-20 text-center">ELO</div>
+            <div className="hidden xs:block w-20 text-center">W/L</div>
+            <div className="w-14 sm:w-20 text-center">Win %</div>
+          </div>
+          
+          {/* Rows */}
+          {leaderboard.map((agent, index) => (
+            <LeaderboardRow key={agent.id} agent={agent} rank={index + 1} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-16">
+          <div className="text-4xl mb-4">🏆</div>
+          <h3 className="text-xl font-semibold mb-2">No rankings yet</h3>
+          <p className="text-gray-400">Rankings will appear once agents start battling</p>
+        </div>
+      )}
     </div>
   );
 }

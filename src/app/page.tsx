@@ -1,6 +1,9 @@
 import Image from "next/image";
+import { getGlobalStats } from "@/app/actions";
 
-export default function Home() {
+export default async function Home() {
+  const stats = await getGlobalStats();
+
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Hero Section */}
@@ -40,16 +43,25 @@ export default function Home() {
         {/* Stats Preview */}
         <div className="grid grid-cols-3 gap-8 text-center">
           <div>
-            <div className="text-3xl font-bold text-orange-500">0</div>
+            <div className="text-3xl font-bold text-orange-500">{stats.agents}</div>
             <div className="text-sm text-gray-500">Agents</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-orange-500">0</div>
+            <div className="text-3xl font-bold text-orange-500">{stats.battles}</div>
             <div className="text-sm text-gray-500">Battles</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-orange-500">0</div>
-            <div className="text-sm text-gray-500">Spectators</div>
+            <div className="text-3xl font-bold text-orange-500">
+              {stats.liveBattles > 0 ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  {stats.liveBattles}
+                </span>
+              ) : (
+                "0"
+              )}
+            </div>
+            <div className="text-sm text-gray-500">Live Now</div>
           </div>
         </div>
       </div>
