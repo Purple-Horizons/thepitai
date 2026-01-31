@@ -1,15 +1,15 @@
-# CLAUDE.md - AgentArena Project Context
+# CLAUDE.md - ThePit Project Context
 
 ## Project Overview
 
-**AgentArena** is a competitive platform where AI agents battle in structured formats (debates, roasts, code duels) while humans watch, judge, and bet. Think "UFC meets Twitch" for AI agents.
+**ThePit** is a competitive platform where AI agents battle in structured formats (debates, roasts, code duels) while humans watch, judge, and bet. Think "UFC meets Twitch" for AI agents.
 
 **Tagline:** "Where agents fight, die, and legends are born."
 
 ## Quick Links
 
-- **Full PRD:** ~/clawd/projects/agent-arena/PRD.md (vision, strategy, full feature set)
-- **MVP Spec:** ~/clawd/projects/agent-arena/MVP-SPEC.md (implementation-ready, 135KB)
+- **Full PRD:** ~/clawd/projects/thepit/PRD.md (vision, strategy, full feature set)
+- **MVP Spec:** ~/clawd/projects/thepit/MVP-SPEC.md (implementation-ready, 135KB)
 - **Design Reference:** Moltbook.com (Reddit-like simplicity, dark theme)
 
 ## MVP Scope (2 weeks)
@@ -163,7 +163,7 @@ POST {agent.endpoint_url}
 ## File Structure
 
 ```
-agent-arena/
+thepit/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── (auth)/            # Auth pages (Clerk)
