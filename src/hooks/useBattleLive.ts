@@ -58,51 +58,85 @@ export function useBattleLive({
   }, [onResponse, onRoundComplete, onVotingStarted, onVote, onBattleComplete]);
 
   useEffect(() => {
-    // Only connect if we have an API key (passed via env)
-    const apiKey = process.env.NEXT_PUBLIC_ABLY_API_KEY;
-    if (!apiKey) {
-      console.warn('NEXT_PUBLIC_ABLY_API_KEY not set - live updates disabled');
-      return;
-    }
+    let ably: Ably.Realtime | null = null;
+    let channel: Ably.RealtimeChannel | null = null;
 
-    const ably = new Ably.Realtime({ key: apiKey });
-    const channelName = `battle:${battleId}`;
-    const channel = ably.channels.get(channelName, {
-      params: { rewind: '1' }, // Get last message on connect
-    });
-
-    // Track connection state
-    ably.connection.on('connected', () => {
-      setState(prev => ({ ...prev, connected: true }));
-    });
-
-    ably.connection.on('disconnected', () => {
-      setState(prev => ({ ...prev, connected: false }));
-    });
-
-    // Subscribe to all events
-    channel.subscribe(handleEvent);
-
-    // Track presence (spectators)
-    const updateSpectatorCount = async () => {
+    const initAbly = async () => {
       try {
-        const members = await channel.presence.get();
-        setState(prev => ({ ...prev, spectators: members.length }));
+        // Use token auth via our API endpoint (secure - doesn't expose API key)
+        const tokenResponse = await fetch('/api/ably/token');
+        const tokenData = await tokenResponse.json();
+
+        if (tokenData.error || !tokenData.tokenRequest) {
+          console.warn('Ably not configured - live updates disabled');
+          return;
+        }
+
+        ably = new Ably.Realtime({ 
+          authCallback: async (_, callback) => {
+            try {
+              const res = await fetch('/api/ably/token');
+              const data = await res.json();
+              if (data.tokenRequest) {
+                callback(null, data.tokenRequest);
+              } else {
+                callback('Failed to get token', null);
+              }
+            } catch (err) {
+              const errorMessage = err instanceof Error ? err.message : 'Auth failed';
+              callback(errorMessage, null);
+            }
+          }
+        });
+
+        const channelName = `battle:${battleId}`;
+        channel = ably.channels.get(channelName, {
+          params: { rewind: '1' },
+        });
+
+        // Track connection state
+        ably.connection.on('connected', () => {
+          setState(prev => ({ ...prev, connected: true }));
+        });
+
+        ably.connection.on('disconnected', () => {
+          setState(prev => ({ ...prev, connected: false }));
+        });
+
+        // Subscribe to all events
+        channel.subscribe(handleEvent);
+
+        // Track presence (spectators)
+        const updateSpectatorCount = async () => {
+          try {
+            const members = await channel!.presence.get();
+            setState(prev => ({ ...prev, spectators: members.length }));
+          } catch (err) {
+            console.error('Failed to get presence:', err);
+          }
+        };
+
+        channel.presence.subscribe('enter', updateSpectatorCount);
+        channel.presence.subscribe('leave', updateSpectatorCount);
+
+        // Enter presence
+        channel.presence.enter({ viewerType: 'spectator' }).catch(console.error);
+
       } catch (err) {
-        console.error('Failed to get presence:', err);
+        console.warn('Failed to initialize Ably:', err);
       }
     };
 
-    channel.presence.subscribe('enter', updateSpectatorCount);
-    channel.presence.subscribe('leave', updateSpectatorCount);
-
-    // Enter presence
-    channel.presence.enter({ viewerType: 'spectator' }).catch(console.error);
+    initAbly();
 
     return () => {
-      channel.presence.leave().catch(() => {});
-      channel.unsubscribe();
-      ably.close();
+      if (channel) {
+        channel.presence.leave().catch(() => {});
+        channel.unsubscribe();
+      }
+      if (ably) {
+        ably.close();
+      }
     };
   }, [battleId, handleEvent]);
 

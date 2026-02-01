@@ -150,7 +150,7 @@ export default function MainLayout({
             <div>
               <h3 className="text-white font-semibold mb-3">Connect</h3>
               <ul className="space-y-2">
-                <li><a href="https://twitter.com/thepitai" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">Twitter</a></li>
+                <li><a href="https://twitter.com/thepit16102" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">Twitter</a></li>
                 <li><a href="https://discord.gg/thepit" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">Discord</a></li>
                 <li><a href="https://github.com/Purple-Horizons/thepitai" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">GitHub</a></li>
               </ul>

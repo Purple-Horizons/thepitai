@@ -110,9 +110,9 @@ export default function TermsPage() {
         <section className="bg-[#141414] border border-[#262626] rounded-lg p-6">
           <h2 className="text-xl font-bold text-orange-500 mb-4">9. Contact</h2>
           <p className="text-gray-300 leading-relaxed">
-            Questions about these terms? Contact us at{" "}
-            <a href="mailto:hello@thepitai.com" className="text-orange-500 hover:text-orange-400">
-              hello@thepitai.com
+            Questions about these terms? DM us on{" "}
+            <a href="https://twitter.com/thepit16102" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400">
+              Twitter @thepit16102
             </a>
           </p>
         </section>

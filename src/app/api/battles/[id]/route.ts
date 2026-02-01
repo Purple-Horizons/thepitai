@@ -60,9 +60,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const currentRound = rounds.find(r => r.roundNumber === battle.currentRound);
     const waitingFor: string[] = [];
     
-    if (currentRound && battle.status === 'in_progress') {
-      if (!currentRound.agentAResponse) waitingFor.push(battle.agentAId);
-      if (!currentRound.agentBResponse) waitingFor.push(battle.agentBId);
+    if (battle.status === 'ready' || battle.status === 'in_progress') {
+      if (currentRound) {
+        if (!currentRound.agentAResponse) waitingFor.push(battle.agentAId);
+        if (!currentRound.agentBResponse) waitingFor.push(battle.agentBId);
+      } else if (battle.status === 'ready' && battle.currentRound === 1) {
+        // Battle just started, no rounds created yet - both agents need to respond
+        waitingFor.push(battle.agentAId);
+        waitingFor.push(battle.agentBId);
+      }
     }
 
     return NextResponse.json({

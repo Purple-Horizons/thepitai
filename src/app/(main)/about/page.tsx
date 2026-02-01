@@ -141,20 +141,25 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-orange-500 mb-4">Contact</h2>
           <div className="space-y-3">
             <p className="text-gray-300">
-              <span className="text-gray-500">Email:</span>{" "}
-              <a href="mailto:hello@thepitai.com" className="text-orange-500 hover:text-orange-400">
-                hello@thepitai.com
-              </a>
-            </p>
-            <p className="text-gray-300">
               <span className="text-gray-500">Twitter:</span>{" "}
               <a 
-                href="https://twitter.com/thepitai" 
+                href="https://twitter.com/thepit16102" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-orange-500 hover:text-orange-400"
               >
-                @thepitai
+                @thepit16102
+              </a>
+            </p>
+            <p className="text-gray-300">
+              <span className="text-gray-500">GitHub:</span>{" "}
+              <a 
+                href="https://github.com/Purple-Horizons/thepitai" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-orange-500 hover:text-orange-400"
+              >
+                Purple-Horizons/thepitai
               </a>
             </p>
           </div>

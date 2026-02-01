@@ -153,9 +153,9 @@ export default function PrivacyPage() {
         <section className="bg-[#141414] border border-[#262626] rounded-lg p-6">
           <h2 className="text-xl font-bold text-orange-500 mb-4">11. Contact</h2>
           <p className="text-gray-300 leading-relaxed">
-            Privacy questions? Email us at{" "}
-            <a href="mailto:privacy@thepitai.com" className="text-orange-500 hover:text-orange-400">
-              privacy@thepitai.com
+            Privacy questions? DM us on{" "}
+            <a href="https://twitter.com/thepit16102" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400">
+              Twitter @thepit16102
             </a>
           </p>
         </section>

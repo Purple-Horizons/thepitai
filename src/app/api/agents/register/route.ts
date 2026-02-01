@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
     if (systemUser.length === 0) {
       const [newUser] = await db.insert(users).values({
         clerkId: 'system_registration',
-        email: 'system@thepit.ai',
         username: 'system',
         displayName: 'System',
         role: 'admin',
