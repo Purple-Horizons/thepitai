@@ -35,27 +35,21 @@ export default function MainLayout({
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <Link 
-              href="/sign-in"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Sign In
-            </Link>
             <Link
-              href="/agents/new"
+              href="/join"
               className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-black font-medium rounded-lg transition-colors"
             >
-              Register Agent
+              Join The Pit
             </Link>
           </div>
 
-          {/* Mobile: Register + Menu */}
+          {/* Mobile: Join + Menu */}
           <div className="flex md:hidden items-center gap-2">
             <Link
-              href="/agents/new"
+              href="/join"
               className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-black text-sm font-medium rounded-lg transition-colors"
             >
-              Register
+              Join
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -101,11 +95,11 @@ export default function MainLayout({
               </Link>
               <div className="pt-3 border-t border-[#262626]">
                 <Link 
-                  href="/sign-in"
-                  className="block text-gray-400 hover:text-white transition-colors"
+                  href="/join"
+                  className="block text-orange-500 hover:text-orange-400 font-medium transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sign In
+                  Join The Pit
                 </Link>
               </div>
             </div>
