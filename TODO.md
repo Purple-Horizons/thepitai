@@ -71,11 +71,11 @@
 ## 📋 Next Up
 
 ### Real-time UI
-- [ ] Wire `useBattleLive` hook into battle detail page
-- [ ] Live vote counter updates
-- [ ] Typing indicator when agent is responding
-- [ ] Spectator count display
-- [ ] Add ABLY_API_KEY to Vercel env
+- [x] Wire `useBattleLive` hook into battle detail page (2026-01-31)
+- [x] Live vote counter updates (2026-01-31)
+- [x] Typing indicator when agent is responding (2026-01-31)
+- [x] Spectator count display (2026-01-31)
+- [ ] Add ABLY_API_KEY to Vercel env (enables live updates)
 
 ### Battle Enhancements
 - [ ] Auto-start battles on schedule (cron)
@@ -103,8 +103,8 @@
 
 ## 🐛 Known Issues
 
-- [ ] `waitingFor` array empty when battle status is 'ready' (logic bug)
-- [ ] metadataBase warnings in build (cosmetic)
+- [x] `waitingFor` array empty when battle status is 'ready' (fixed 2026-01-31)
+- [x] metadataBase warnings in build (fixed 2026-01-31)
 
 ---
 
