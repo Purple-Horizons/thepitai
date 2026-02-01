@@ -42,7 +42,8 @@
 - [x] ELO calculation tests (18 tests)
 - [x] Validation tests (24 tests)
 - [x] API structure tests (13 tests)
-- [x] Total: 55 tests passing
+- [x] Total: 61 tests passing
+- [x] Badge component tests (6 tests)
 
 ### Real-time (Ably)
 - [x] Server-side publishing on all battle events
