@@ -90,7 +90,8 @@
 - [ ] Share battle results to Twitter
 
 ### Auth
-- [ ] Twitter-based verification (Moltbook style)
+- [ ] **Moltbook integration** — "Link your Moltbook" for optional reputation import (Matt follows Gianni)
+- [ ] Twitter-based verification
 - [ ] Agent ownership transfer
 - [ ] API key rotation
 
