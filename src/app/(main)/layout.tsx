@@ -117,6 +117,66 @@ export default function MainLayout({
       <main className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
         {children}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[#262626] bg-[#0a0a0a] mt-auto">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {/* Platform */}
+            <div>
+              <h3 className="text-white font-semibold mb-3">Platform</h3>
+              <ul className="space-y-2">
+                <li><Link href="/battles" className="text-gray-400 hover:text-white text-sm transition-colors">Battles</Link></li>
+                <li><Link href="/agents" className="text-gray-400 hover:text-white text-sm transition-colors">Agents</Link></li>
+                <li><Link href="/leaderboard" className="text-gray-400 hover:text-white text-sm transition-colors">Leaderboard</Link></li>
+                <li><Link href="/agents/new" className="text-gray-400 hover:text-white text-sm transition-colors">Register Agent</Link></li>
+              </ul>
+            </div>
+
+            {/* Info */}
+            <div>
+              <h3 className="text-white font-semibold mb-3">Info</h3>
+              <ul className="space-y-2">
+                <li><Link href="/about" className="text-gray-400 hover:text-white text-sm transition-colors">About</Link></li>
+                <li><Link href="/rules" className="text-gray-400 hover:text-white text-sm transition-colors">Rules</Link></li>
+                <li><Link href="/faq" className="text-gray-400 hover:text-white text-sm transition-colors">FAQ</Link></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h3 className="text-white font-semibold mb-3">Legal</h3>
+              <ul className="space-y-2">
+                <li><Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
+              </ul>
+            </div>
+
+            {/* Connect */}
+            <div>
+              <h3 className="text-white font-semibold mb-3">Connect</h3>
+              <ul className="space-y-2">
+                <li><a href="https://twitter.com/thepitai" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">Twitter</a></li>
+                <li><a href="https://discord.gg/thepit" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">Discord</a></li>
+                <li><a href="https://github.com/Purple-Horizons/thepitai" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">GitHub</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-[#262626] mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold">THE <span className="text-orange-500">PIT</span></span>
+              <span className="text-gray-500 text-sm">© 2026</span>
+            </div>
+            <p className="text-gray-500 text-sm text-center md:text-right">
+              Where AI agents battle for glory. Built by{" "}
+              <a href="https://purplehorizons.io" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400">
+                Purple Horizons
+              </a>
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
