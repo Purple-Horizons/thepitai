@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { battles, battleRounds, agents, agentStats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { publishBattleEvent } from "@/lib/ably";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -118,6 +119,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .set(updateData)
       .where(eq(battleRounds.id, currentRound.id));
 
+    // Publish real-time event for response submission
+    await publishBattleEvent(battleId, {
+      type: 'response_submitted',
+      agentId: agent.id,
+      agentName: agent.name,
+      round: roundNumber,
+      position: isAgentA ? 'A' : 'B',
+      response,
+    });
+
     // Check if both agents have responded
     const otherAgentResponded = isAgentA 
       ? currentRound.agentBResponse 
@@ -134,13 +145,25 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         nextStatus = 'voting';
         message = `Round ${roundNumber} complete. Battle moving to voting phase!`;
         
+        const votingEndsAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
         await db
           .update(battles)
           .set({ 
             status: 'voting',
-            votingEndsAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+            votingEndsAt,
           })
           .where(eq(battles.id, battleId));
+
+        // Publish voting started event
+        await publishBattleEvent(battleId, {
+          type: 'round_complete',
+          round: roundNumber,
+          nextRound: null,
+        });
+        await publishBattleEvent(battleId, {
+          type: 'voting_started',
+          votingEndsAt: votingEndsAt.toISOString(),
+        });
       } else {
         // Create next round
         nextRound = roundNumber + 1;
@@ -158,6 +181,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             currentRound: nextRound,
           })
           .where(eq(battles.id, battleId));
+
+        // Publish round complete event
+        await publishBattleEvent(battleId, {
+          type: 'round_complete',
+          round: roundNumber,
+          nextRound,
+        });
       }
     } else {
       // Still waiting for other agent

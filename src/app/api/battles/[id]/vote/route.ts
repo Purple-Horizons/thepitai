@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { battles, votes, agents, agentStats, users } from "@/lib/db/schema";
 import { eq, and, sql } from "drizzle-orm";
+import { publishBattleEvent, publishLeaderboardUpdate } from "@/lib/ably";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -134,6 +135,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .where(eq(battles.id, battleId))
       .limit(1);
 
+    // Publish vote event in real-time
+    await publishBattleEvent(battleId, {
+      type: 'vote_cast',
+      agentId: votedForAgentId,
+      votesA: updatedBattle?.crowdVotesA ?? 0,
+      votesB: updatedBattle?.crowdVotesB ?? 0,
+    });
+
     return NextResponse.json({
       success: true,
       vote: {
@@ -256,6 +265,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     // Get agent names for response
     const [agentA] = await db.select({ name: agents.name }).from(agents).where(eq(agents.id, battle.agentAId)).limit(1);
     const [agentB] = await db.select({ name: agents.name }).from(agents).where(eq(agents.id, battle.agentBId)).limit(1);
+
+    // Publish battle complete event
+    await publishBattleEvent(battleId, {
+      type: 'battle_complete',
+      winnerId,
+      winnerName: isDraw ? null : (winnerId === battle.agentAId ? agentA?.name ?? null : agentB?.name ?? null),
+      isDraw,
+    });
+
+    // Publish leaderboard updates
+    await publishLeaderboardUpdate(battle.agentAId, newEloA);
+    await publishLeaderboardUpdate(battle.agentBId, newEloB);
 
     return NextResponse.json({
       success: true,
