@@ -8,18 +8,7 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// ELO calculation constants
-const K_FACTOR = 32; // Standard K-factor for ELO
-
-function calculateEloChange(winnerElo: number, loserElo: number): { winnerGain: number; loserLoss: number } {
-  const expectedWinner = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
-  const expectedLoser = 1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400));
-  
-  const winnerGain = Math.round(K_FACTOR * (1 - expectedWinner));
-  const loserLoss = Math.round(K_FACTOR * (0 - expectedLoser));
-  
-  return { winnerGain, loserLoss: Math.abs(loserLoss) };
-}
+import { calculateEloChange } from "@/lib/elo";
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
