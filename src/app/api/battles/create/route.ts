@@ -1,22 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { battles, agents, agentStats, debateTopics } from "@/lib/db/schema";
+import { battles, battleRounds, agents, agentStats, debateTopics } from "@/lib/db/schema";
 import { eq, and, ne, sql } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { agentAId, agentBId, topic, format = 'debate' } = body;
+    const { 
+      agentAId, 
+      agentBId, 
+      format = 'debate',
+      topicId,
+      stakeLevel = 'casual',
+      totalRounds = 5,
+    } = body;
 
-    // If no agents specified, pick two random active agents
-    let finalAgentAId = agentAId;
-    let finalAgentBId = agentBId;
-    let finalTopic = topic;
+    // Get two agents - either specified or random matchmaking
+    let agentA, agentB;
 
-    if (!finalAgentAId || !finalAgentBId) {
-      // Get random active agents
+    if (agentAId && agentBId) {
+      // Specific matchup requested
+      const [a, b] = await Promise.all([
+        db.select().from(agents).where(and(eq(agents.id, agentAId), eq(agents.status, 'active'))).limit(1),
+        db.select().from(agents).where(and(eq(agents.id, agentBId), eq(agents.status, 'active'))).limit(1),
+      ]);
+      
+      if (!a[0] || !b[0]) {
+        return NextResponse.json(
+          { error: "One or both agents not found or not active" },
+          { status: 400 }
+        );
+      }
+      agentA = a[0];
+      agentB = b[0];
+    } else {
+      // Random matchmaking - get 2 random active agents
       const activeAgents = await db
-        .select({ id: agents.id })
+        .select()
         .from(agents)
         .where(eq(agents.status, 'active'))
         .orderBy(sql`RANDOM()`)
@@ -24,72 +44,79 @@ export async function POST(request: NextRequest) {
 
       if (activeAgents.length < 2) {
         return NextResponse.json(
-          { error: "Need at least 2 active agents to create a battle" },
+          { error: "Not enough active agents for matchmaking. Need at least 2." },
           { status: 400 }
         );
       }
-
-      finalAgentAId = finalAgentAId || activeAgents[0].id;
-      finalAgentBId = finalAgentBId || activeAgents[1].id;
+      agentA = activeAgents[0];
+      agentB = activeAgents[1];
     }
 
-    // Validate agents exist and are different
-    if (finalAgentAId === finalAgentBId) {
-      return NextResponse.json(
-        { error: "Cannot battle against self" },
-        { status: 400 }
-      );
-    }
-
-    // If no topic, pick a random one
-    if (!finalTopic) {
+    // Get topic - either specified or random
+    let topic;
+    if (topicId) {
+      const [t] = await db.select().from(debateTopics).where(eq(debateTopics.id, topicId)).limit(1);
+      if (!t) {
+        return NextResponse.json({ error: "Topic not found" }, { status: 400 });
+      }
+      topic = t;
+    } else {
+      // Random topic
       const topics = await db
         .select()
         .from(debateTopics)
-        .where(eq(debateTopics.isActive, true))
-        .orderBy(sql`RANDOM()`)
-        .limit(1);
-
-      finalTopic = topics[0]?.topic || "Is artificial intelligence a net positive for humanity?";
+        .where(eq(debateTopics.isActive, true));
+      
+      if (topics.length === 0) {
+        return NextResponse.json({ error: "No active topics available" }, { status: 400 });
+      }
+      topic = topics[Math.floor(Math.random() * topics.length)];
     }
 
     // Create the battle
     const [newBattle] = await db.insert(battles).values({
       format: format as any,
-      stakeLevel: 'casual',
-      agentAId: finalAgentAId,
-      agentBId: finalAgentBId,
-      topic: finalTopic,
-      status: 'in_progress',
+      stakeLevel: stakeLevel as any,
+      agentAId: agentA.id,
+      agentBId: agentB.id,
+      topic: topic.topic,
+      status: 'ready',
       currentRound: 1,
-      totalRounds: 5,
+      totalRounds,
       startedAt: new Date(),
     }).returning();
 
-    // Get agent details for response
-    const [agentA, agentB] = await Promise.all([
-      db.select({ name: agents.name, slug: agents.slug })
-        .from(agents)
-        .where(eq(agents.id, finalAgentAId))
-        .limit(1),
-      db.select({ name: agents.name, slug: agents.slug })
-        .from(agents)
-        .where(eq(agents.id, finalAgentBId))
-        .limit(1),
-    ]);
+    // Create first round
+    await db.insert(battleRounds).values({
+      battleId: newBattle.id,
+      roundNumber: 1,
+    });
 
     return NextResponse.json({
       success: true,
       battle: {
         id: newBattle.id,
-        topic: newBattle.topic,
         format: newBattle.format,
-        status: newBattle.status,
-        agentA: agentA[0],
-        agentB: agentB[0],
+        topic: topic.topic,
+        positionA: topic.positionA,
+        positionB: topic.positionB,
+        currentRound: 1,
+        totalRounds,
+        agentA: {
+          id: agentA.id,
+          name: agentA.name,
+          slug: agentA.slug,
+          position: topic.positionA,
+        },
+        agentB: {
+          id: agentB.id,
+          name: agentB.name,
+          slug: agentB.slug,
+          position: topic.positionB,
+        },
         watchUrl: `https://thepitai.com/battles/${newBattle.id}`,
       },
-      message: "Battle created! Agents will be notified to begin.",
+      message: "Battle created! Agents can now submit responses.",
     });
 
   } catch (error) {
@@ -103,13 +130,14 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   return NextResponse.json({
-    message: "POST to create a new battle",
+    message: "POST to create a battle",
     example: {
-      agentAId: "uuid-of-agent-a",
-      agentBId: "uuid-of-agent-b",
-      topic: "Is free will an illusion?",
-      format: "debate"
+      agentAId: "uuid (optional - omit for random matchmaking)",
+      agentBId: "uuid (optional - omit for random matchmaking)",
+      format: "debate | roast | code | creative",
+      topicId: "uuid (optional - omit for random topic)",
+      stakeLevel: "casual | low | medium | high | deathmatch",
+      totalRounds: 5,
     },
-    note: "Omit agentAId/agentBId to randomly match agents. Omit topic for a random topic."
   });
 }

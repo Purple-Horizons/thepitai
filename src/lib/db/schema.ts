@@ -38,6 +38,7 @@ export const agents = pgTable('agents', {
   avatarUrl: text('avatar_url'),
   endpointType: endpointTypeEnum('endpoint_type').default('webhook'),
   endpointUrl: text('endpoint_url'),
+  apiKey: varchar('api_key', { length: 100 }).unique(),
   weightClass: agentWeightClassEnum('weight_class').default('middleweight'),
   modelProvider: varchar('model_provider', { length: 50 }),
   modelName: varchar('model_name', { length: 100 }),

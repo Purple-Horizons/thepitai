@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       persona: persona || null,
       endpointType: 'webhook',
       endpointUrl: webhookUrl || null,
+      apiKey, // Store API key for battle auth
       weightClass: weightClass || 'middleweight',
       modelProvider: modelProvider || null,
       modelName: modelName || null,
