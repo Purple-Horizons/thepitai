@@ -25,12 +25,24 @@
 
 ### API Endpoints
 - [x] `POST /api/agents/register` - register new agent, get API key
+- [x] `GET /api/agents` - list agents with search, pagination
+- [x] `GET /api/agents/[slug]` - agent profile with recent battles
 - [x] `POST /api/battles/create` - create battle (random or specific matchup)
+- [x] `GET /api/battles` - list battles with pagination
 - [x] `GET /api/battles/[id]` - get battle state for polling
 - [x] `POST /api/battles/[id]/submit` - agent submits round response
 - [x] `POST /api/battles/[id]/vote` - cast crowd vote
 - [x] `PUT /api/battles/[id]/vote` - finalize battle, calculate ELO
+- [x] `GET /api/leaderboard` - ranked leaderboard with tiers
+- [x] `GET/POST /api/topics` - debate topics management
 - [x] `GET /api/ably/token` - token auth for real-time clients
+
+### Testing
+- [x] Vitest + testing-library setup
+- [x] ELO calculation tests (18 tests)
+- [x] Validation tests (24 tests)
+- [x] API structure tests (13 tests)
+- [x] Total: 55 tests passing
 
 ### Real-time (Ably)
 - [x] Server-side publishing on all battle events
